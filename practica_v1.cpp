@@ -13,7 +13,7 @@ void add_edge (Graph& G, vector<Edge>& edges, int a, int b, int cap) {
     edges.push_back(e2);
 }
 
-Graph set_up_graph (vector<Edge>& edges, int& source, int& sink){
+Graph set_up_graph (vector<Edge>& edges, int& source, int& sink, int& edge_s, int& edge_t){
     vector<pair<int,int> > aux;
     int d, a, td, ta;
     while (cin >> d >> a >> td >> ta) {
@@ -44,33 +44,34 @@ Graph set_up_graph (vector<Edge>& edges, int& source, int& sink){
         }
     }
 
+    edge_s = edges.size();
     add_edge(ret,edges, source, ori_src, 1);
+    edge_t = edges.size();
     add_edge(ret,edges, ori_sink, sink, 1);
 
     return ret;
 }
 
-int calc_min_k (const Graph& g, vector<Edge>& edges, int s, int t) {
+int calc_min_k (const Graph& g, vector<Edge>& edges, int s, int t, int s_id, int t_id) {
     //Edmonds_Karp ek (g, edges);
     //int maxflow = ek.get_maxflow(s, t);
     Preflow_push pf (g,edges);
     int maxflow = pf.get_maxflow(s,t);
-    int size = edges.size();
 
-    while (maxflow != (int)g[s].size() - 1 + edges[size-2].cap){
-        edges[size-4].cap++; //source
-        edges[size-2].cap++; //sink
-        Preflow_push pf (g,edges);
+    while (maxflow != (int)g[s].size() - 1 + edges[t_id].cap){
+        edges[s_id].cap++;
+        edges[t_id].cap++;
         maxflow = pf.get_maxflow(s,t);
     }
-    return edges[size-2].cap;
+    return edges[t_id].cap;
 }
 
 int main() {
     vector<Edge> edges;
-    int s, t;
-    Graph g = set_up_graph(edges,s,t);
+    int s, t, edge_sk, edge_tk;
+    Graph g = set_up_graph(edges,s,t, edge_sk, edge_tk);
+
     const clock_t start = clock();
-    cout << calc_min_k(g,edges,s,t) << " ";
+    cout << calc_min_k(g,edges,s,t, edge_sk, edge_tk) << " ";
     cout << double(clock () - start) / CLOCKS_PER_SEC << endl;
 }
