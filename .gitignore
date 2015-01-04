@@ -1,2 +1,3 @@
-./practica
+practica
 *.o
+*.csv

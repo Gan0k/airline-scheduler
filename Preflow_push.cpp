@@ -66,7 +66,7 @@ int Preflow_push::get_maxflow (int s, int t){
     dist[s] = size;
     active[s] = active[t] = true;
 
-    for (int i = 0; i < (int)G[s].size(); i++) {
+    for (int i = 0; i < (int)G[s].size(); ++i) {
         excess[s] += edges[G[s][i]].cap;
         Push(G[s][i], s);
     }
