@@ -1,11 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <limits>
 //#include <time.h>
 using namespace std;
-
-#define INFINITY numeric_limits<int>::max()
 
 struct Edge {
     int to, cap, flow;
