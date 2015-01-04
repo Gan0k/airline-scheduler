@@ -51,22 +51,20 @@ Graph set_up_graph (vector<Edge>& edges, int& source, int& sink){
 }
 
 int calc_min_k (const Graph& g, vector<Edge>& edges, int s, int t) {
-    //Edmonds_Karp ek (g, edges);
-    //int maxflow = ek.get_maxflow(s, t);
-    Preflow_push pf (g,edges);
-    int maxflow = pf.get_maxflow(s,t);
+	Edmonds_Karp ek (g,edges);
+    int maxflow = ek.get_maxflow(s, t);
     int size = edges.size();
-
     while (maxflow != (int)g[s].size() - 1 + edges[size-2].cap){
+        //the edges where the last ones pushed
         edges[size-4].cap++; //source
         edges[size-2].cap++; //sink
-        Preflow_push pf (g,edges);
-        maxflow = pf.get_maxflow(s,t);
+        Edmonds_Karp ek (g,edges);
+        maxflow = ek.get_maxflow(s, t);
     }
     return edges[size-2].cap;
 }
 
-int main() {
+int main(int argc, char **argv) {
     vector<Edge> edges;
     int s, t;
     Graph g = set_up_graph(edges,s,t);
