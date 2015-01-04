@@ -2,7 +2,7 @@
 #include <vector>
 #include <queue>
 #include <limits>
-#include <time.h>
+//#include <time.h>
 using namespace std;
 
 #define INFINITY numeric_limits<int>::max()
@@ -13,6 +13,8 @@ struct Edge {
 
 typedef vector<vector<int> > Graph;
 
+
+/* Read and create the graph */
 
 void add_edge (Graph& G, vector<Edge>& edges, int a, int b, int cap) {
     Edge e1 = {b, cap, 0};
@@ -64,55 +66,8 @@ Graph set_up_graph (vector<Edge>& edges, int& source, int& sink,
     return ret;
 }
 
-int bfs (const Graph& G, const vector<Edge>& edges, 
-        vector<pair<int,int> >& parent, int start, int end) {
 
-    int size = G.size();
-    vector<int> path_capacity (size, 0);
-    parent[start].first = -2;
-    path_capacity[start] = INFINITY;
-
-    queue<int> Q;
-    Q.push(start);
-     
-    while (not Q.empty()) {
-        int current = Q.front(); 
-        Q.pop();
-
-        for (int i = 0; i < (int)G[current].size(); ++i) {
-            Edge e = edges[G[current][i]];
-            if (parent[e.to].first == -1 and e.cap - e.flow > 0) {
-                parent[e.to].first = current;
-                parent[e.to].second = G[current][i];
-                path_capacity[e.to] = min(path_capacity[current], e.cap - e.flow);
-                if (e.to == end) return path_capacity[end];
-                Q.push(e.to);
-            }
-        }
-    }
-    return 0;
-}
-
-int edmonds_karp (const Graph& g, vector<Edge>& edges, int source, int sink) {
-    int max_flow = 0;
-    while (true) {
-        vector<pair<int,int> > parent (g.size(), pair<int,int> (-1, -1));
-        int flow = bfs(g,edges,parent,source,sink);
-        if (flow > 0) {
-            max_flow += flow;
-            int current = sink;
-            while (current != source){
-                int previous = parent[current].first;
-                int id_edge = parent[current].second;
-                edges[id_edge].flow += flow;
-                edges[id_edge^1].flow -= flow;
-                current = previous;
-            }
-        }
-        else break;
-    }
-    return max_flow;
-}
+/* Preflow push algorithm*/
 
 void Enqueue (const vector<int>& excess, vector<bool>& active, 
               queue<int>& Q, int v) { 
@@ -208,6 +163,9 @@ int push_relabel (const Graph& G, vector<Edge>& edges, int s, int t) {
     return maxflow;
 }
 
+
+/* Find and print the result */
+
 int calc_min_k (const Graph& g, vector<Edge>& edges, int s, int t, 
                 int s_id, int t_id) {
 
@@ -253,8 +211,9 @@ int main () {
     vector<Edge> edges;
     int s, t, edge_sk, edge_tk;
     Graph g = set_up_graph(edges,s,t, edge_sk, edge_tk);
-    const clock_t start = clock();
+    //const clock_t start = clock();
     cout << calc_min_k(g,edges,s,t,edge_sk,edge_tk) << " ";
-    cout << double(clock () - start) / CLOCKS_PER_SEC << endl << endl;
-    print_paths(g, edges, edge_sk);
+    cout << endl;
+    //cout << double(clock () - start) / CLOCKS_PER_SEC << endl << endl;
+    //print_paths(g, edges, edge_sk);
 }
