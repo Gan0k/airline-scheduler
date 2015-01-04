@@ -13,6 +13,7 @@ struct Edge {
 
 typedef vector<vector<int> > Graph;
 
+
 void add_edge (Graph& G, vector<Edge>& edges, int a, int b, int cap) {
     Edge e1 = {b, cap, 0};
     Edge e2 = {a, 0, 0};
@@ -22,7 +23,9 @@ void add_edge (Graph& G, vector<Edge>& edges, int a, int b, int cap) {
     edges.push_back(e2);
 }
 
-Graph set_up_graph (vector<Edge>& edges, int& source, int& sink, int& edge_s, int& edge_t){
+Graph set_up_graph (vector<Edge>& edges, int& source, int& sink, 
+                    int& edge_s, int& edge_t){
+
     vector<pair<int,int> > aux;
     int d, a, td, ta;
     while (cin >> d >> a >> td >> ta) {
@@ -90,7 +93,7 @@ int bfs (const Graph& G, const vector<Edge>& edges,
     return 0;
 }
 
-int edmonds_karp (const Graph& g, vector<Edge> edges, int source, int sink) {
+int edmonds_karp (const Graph& g, vector<Edge>& edges, int source, int sink) {
     int max_flow = 0;
     while (true) {
         vector<pair<int,int> > parent (g.size(), pair<int,int> (-1, -1));
@@ -174,7 +177,7 @@ void Discharge (const Graph& G, vector<Edge>& edges, vector<int>& dist,
     }
 }
 
-int push_relabel (const Graph& G, vector<Edge> edges, int s, int t) {
+int push_relabel (const Graph& G, vector<Edge>& edges, int s, int t) {
     int size = G.size();
     vector<int> count (size*2);
     count[0] = size-1;
@@ -205,16 +208,45 @@ int push_relabel (const Graph& G, vector<Edge> edges, int s, int t) {
     return maxflow;
 }
 
-int calc_min_k (const Graph& g, vector<Edge>& edges, int s, int t, int s_id, int t_id) {
+int calc_min_k (const Graph& g, vector<Edge>& edges, int s, int t, 
+                int s_id, int t_id) {
+
     int maxflow = push_relabel(g, edges, s, t);
 
     while (maxflow != (int)g[s].size() - 1 + edges[t_id].cap){
-        //the edges where the last ones pushed
-        edges[s_id].cap++; //source
-        edges[t_id].cap++; //sink
+
+        for (int i = 0; i < (int)edges.size(); ++i)
+            edges[i].flow = 0;
+
+        edges[s_id].cap++; 
+        edges[t_id].cap++;
         maxflow = push_relabel(g,edges, s, t);
     }
+
     return edges[t_id].cap;
+}
+
+void print_paths (const Graph& g, const vector<Edge>& edges, int s_id){
+    int ori_src = edges[s_id].to;
+    int k = edges[s_id].cap;
+    int i = 0, j = 0;
+    while (i < k){
+        if (edges[g[ori_src][j]].flow > 0){
+            int current = edges[g[ori_src][j]].to;
+        
+            while (current != (int)g.size()-1){
+                cout << (current / 2) +1 << " ";
+                ++current;
+
+                int h = 0;
+                while (edges[g[current][h]].flow < 1) ++h;
+                current = edges[g[current][h]].to;
+            }
+            cout << endl;
+            ++i;
+        }
+        ++j;
+    }
 }
 
 int main () {
@@ -223,5 +255,6 @@ int main () {
     Graph g = set_up_graph(edges,s,t, edge_sk, edge_tk);
     const clock_t start = clock();
     cout << calc_min_k(g,edges,s,t,edge_sk,edge_tk) << " ";
-    cout << double(clock () - start) / CLOCKS_PER_SEC << endl;
+    cout << double(clock () - start) / CLOCKS_PER_SEC << endl << endl;
+    print_paths(g, edges, edge_sk);
 }
