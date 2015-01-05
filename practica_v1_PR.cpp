@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-//#include <time.h>
+#include <time.h>
 using namespace std;
 
 struct Edge {
@@ -208,9 +208,9 @@ int main () {
     vector<Edge> edges;
     int s, t, edge_sk, edge_tk;
     Graph g = set_up_graph(edges,s,t, edge_sk, edge_tk);
-    //const clock_t start = clock();
+    const clock_t start = clock();
     cout << calc_min_k(g,edges,s,t,edge_sk,edge_tk) << " ";
     cout << endl;
-    //cout << double(clock () - start) / CLOCKS_PER_SEC << endl << endl;
+    cout << double(clock () - start) / CLOCKS_PER_SEC << endl << endl;
     //print_paths(g, edges, edge_sk);
 }

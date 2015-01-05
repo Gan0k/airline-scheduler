@@ -2,7 +2,7 @@
 
 FILES=Benchmark/*.air
 
-rm $2
+rm -f $2
 
 for f in $FILES
 do
