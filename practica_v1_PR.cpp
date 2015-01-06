@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include <time.h>
+#include <cstring>
 using namespace std;
 
 struct Edge {
@@ -204,12 +205,18 @@ void print_paths (const Graph& g, const vector<Edge>& edges, int s_id){
     }
 }
 
-int main () {
+int main (int argc, char **argv) {
     vector<Edge> edges;
     int s, t, edge_sk, edge_tk;
     Graph g = set_up_graph(edges,s,t, edge_sk, edge_tk);
-    //const clock_t start = clock();
-    cout << calc_min_k(g,edges,s,t,edge_sk,edge_tk) << endl;
-    //cout << double(clock () - start) / CLOCKS_PER_SEC << endl;
-    print_paths(g, edges, edge_sk);
+    if (argc > 1 and strcmp(argv[1], "-t") == 0){
+        const clock_t start = clock();
+        calc_min_k(g,edges,s,t,edge_sk,edge_tk);
+        cout << double(clock () - start) / CLOCKS_PER_SEC << endl;
+    }
+    else {
+        cout << calc_min_k(g,edges,s,t,edge_sk,edge_tk) << endl;
+        print_paths(g, edges, edge_sk);
+    }
 }
+
