@@ -14,6 +14,7 @@ struct Edge {
 
 typedef vector<vector<int> > Graph;
 
+bool v2_act = false;
 
 /* Read and create the graph */
 
@@ -44,9 +45,15 @@ Graph set_up_graph (vector<Edge>& edges, int& source, int& sink,
 
     for (int i = 0; i < size; ++i){
         if (i % 2 == 0){
-            add_edge(ret, edges, ori_src, i, INFINITY);
-            add_edge(ret, edges, i, sink, 1);
-            add_edge(ret, edges, i, i+1, INFINITY);
+            if (v2_act){
+                add_edge(ret, edges, ori_src, i, INFINITY);
+                add_edge(ret, edges, i, sink, 1);
+                add_edge(ret, edges, i, i+1, INFINITY);
+            }
+            else {
+                add_edge(ret, edges, ori_src, i, 1);
+                add_edge(ret, edges, i, sink, 1);
+            }
         }
         else {
             add_edge(ret, edges, source, i, 1);
@@ -54,7 +61,8 @@ Graph set_up_graph (vector<Edge>& edges, int& source, int& sink,
             for (int j = 0; j < size; j += 2) {
                 if (aux[j].first == aux[i].first and 
                     aux[j].second - aux[i].second >= 15){
-                    add_edge(ret, edges, i, j, INFINITY);
+                    if (v2_act) add_edge(ret, edges, i, j, INFINITY);
+                    else add_edge(ret, edges, i, j, 1);
                 }
             }
         }
@@ -186,41 +194,40 @@ int calc_min_k (const Graph& g, vector<Edge>& edges, int s, int t,
     return edges[t_id].cap;
 }
 
-void print_paths (const Graph& g, vector<Edge>& edges, int s_id){
+void print_paths (const Graph& g, const vector<Edge>& edges, int s_id){
     int ori_src = edges[s_id].to;
     int k = edges[s_id].cap;
-    int i = 0;
-    vector<bool> pilots (g[ori_src].size());
-    
+    int i = 0, j = 0;
     while (i < k){
-        int j = 0;
-        while (edges[g[ori_src][j]].flow <= 0) ++j;
+        if (edges[g[ori_src][j]].flow > 0){
+            int current = edges[g[ori_src][j]].to;
+        
+            while (current != (int)g.size()-1){
+                cout << (current / 2) +1 << " ";
+                ++current;
 
-        int current = edges[g[ori_src][j]].to;
-        --edges[g[ori_src][j]].flow;
-
-        while (current != (int)g.size()-1){
-            if (not pilots[current/2]) 
-                cout << (current / 2) + 1 << " ";
-
-            pilots[current/2] = true;
-            ++current;
-
-            int h = 0;
-            while (edges[g[current][h]].flow < 1) ++h;
-            --edges[g[current][h]].flow;
-            current = edges[g[current][h]].to;
+                int h = 0;
+                while (edges[g[current][h]].flow < 1) ++h;
+                current = edges[g[current][h]].to;
+            }
+            cout << endl;
+            ++i;
         }
-        cout << endl;
-        ++i;
+        ++j;
     }
 }
 
 int main (int argc, char **argv) {
+    bool ti = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "-t") == 0) ti = true;
+        else if (strcmp(argv[i], "-v2") == 0) v2_act = true;
+    }
+    
     vector<Edge> edges;
     int s, t, edge_sk, edge_tk;
     Graph g = set_up_graph(edges,s,t, edge_sk, edge_tk);
-    if (argc > 1 and strcmp(argv[1], "-t") == 0){
+    if (ti){
         const clock_t start = clock();
         calc_min_k(g,edges,s,t,edge_sk,edge_tk);
         cout << double(clock () - start) / CLOCKS_PER_SEC << endl;
