@@ -211,5 +211,5 @@ int main () {
     //const clock_t start = clock();
     cout << calc_min_k(g,edges,s,t,edge_sk,edge_tk) << endl;
     //cout << double(clock () - start) / CLOCKS_PER_SEC << endl;
-    //print_paths(g, edges, edge_sk);
+    print_paths(g, edges, edge_sk);
 }
